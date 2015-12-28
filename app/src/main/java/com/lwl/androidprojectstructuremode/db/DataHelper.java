@@ -25,10 +25,10 @@ public class DataHelper {
 	// 数据库版本
 	private static int DB_VERSION = 1;
 	private SQLiteDatabase db;
-	private MySQLite3Helper dbHelper;
+	private MySQLiteOpenHelper dbHelper;
 
 	public DataHelper(Context context) {
-		dbHelper = new MySQLite3Helper(context, DB_NAME, null, DB_VERSION);
+		dbHelper = new MySQLiteOpenHelper(context, DB_NAME, null, DB_VERSION);
 		db = dbHelper.getWritableDatabase();
 	}
 
@@ -40,7 +40,7 @@ public class DataHelper {
 	// 获取users表中的UserID、Access Token、Access Secret的记录
 	public List<UserInfo> GetUserList(Boolean isSimple) {
 		List<UserInfo> userList = new ArrayList<UserInfo>();
-		Cursor cursor = db.query(MySQLite3Helper.TB_NAME, null, null, null, null,
+		Cursor cursor = db.query(MySQLiteOpenHelper.TB_NAME, null, null, null, null,
 				null, UserInfo.ID + " DESC");
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast() && (cursor.getString(1) != null)) {
@@ -65,7 +65,7 @@ public class DataHelper {
 	// 查看——判断users表中的是否包含某个UserID的记录
 	public Boolean HaveUserInfo(String UserId) {
 		Boolean b = false;
-		Cursor cursor = db.query(MySQLite3Helper.TB_NAME, null, UserInfo.USERID
+		Cursor cursor = db.query(MySQLiteOpenHelper.TB_NAME, null, UserInfo.USERID
 				+ "=?", new String[]{UserId}, null, null, null);
 		b = cursor.moveToFirst();
 		Log.e("HaveUserInfo", b.toString());
@@ -83,7 +83,7 @@ public class DataHelper {
 		userIcon.compress(Bitmap.CompressFormat.PNG, 100, os);
 		// 构造SQLite的Content对象，这里也可以使用raw
 		values.put(UserInfo.USERICON, os.toByteArray());
-		int id = db.update(MySQLite3Helper.TB_NAME, values, UserInfo.USERID + "=?", new String[]{UserId});
+		int id = db.update(MySQLiteOpenHelper.TB_NAME, values, UserInfo.USERID + "=?", new String[]{UserId});
 		Log.e("UpdateUserInfo2", id + "");
 		return id;
 	}
@@ -94,7 +94,7 @@ public class DataHelper {
 		values.put(UserInfo.USERID, user.getUserId());
 		values.put(UserInfo.TOKEN, user.getToken());
 		values.put(UserInfo.TOKENSECRET, user.getTokenSecret());
-		int id = db.update(MySQLite3Helper.TB_NAME, values, UserInfo.USERID + "="
+		int id = db.update(MySQLiteOpenHelper.TB_NAME, values, UserInfo.USERID + "="
 				+ user.getUserId(), null);
 		Log.e("UpdateUserInfo", id + "");
 		return id;
@@ -106,7 +106,7 @@ public class DataHelper {
 		values.put(UserInfo.USERID, user.getUserId());
 		values.put(UserInfo.TOKEN, user.getToken());
 		values.put(UserInfo.TOKENSECRET, user.getTokenSecret());
-		Long uid = db.insert(MySQLite3Helper.TB_NAME, UserInfo.ID, values);
+		Long uid = db.insert(MySQLiteOpenHelper.TB_NAME, UserInfo.ID, values);
 		Log.e("SaveUserInfo", uid + "");
 		return uid;
 	}
@@ -121,14 +121,14 @@ public class DataHelper {
 		if (icon != null) {
 			values.put(UserInfo.USERICON, icon);
 		}
-		Long uid = db.insert(MySQLite3Helper.TB_NAME, UserInfo.ID, values);
+		Long uid = db.insert(MySQLiteOpenHelper.TB_NAME, UserInfo.ID, values);
 		Log.e("SaveUserInfo", uid + "");
 		return uid;
 	}
 
 	// 删除users表的记录
 	public int DelUserInfo(String UserId) {
-		int id = db.delete(MySQLite3Helper.TB_NAME,
+		int id = db.delete(MySQLiteOpenHelper.TB_NAME,
 				UserInfo.USERID + "=?", new String[]{UserId});
 		Log.e("DelUserInfo", id + "");
 		return id;
